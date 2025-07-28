@@ -53,14 +53,14 @@ export const getLastModified = (): Date | null => {
 // Generate sample doctors with time slots
 const getDefaultDoctors = (): Doctor[] => {
   const defaultSlots: TimeSlot[] = [
-    { id: '1', startTime: '09:00', endTime: '09:30', dayOfWeek: 1, isAvailable: true },
-    { id: '2', startTime: '09:30', endTime: '10:00', dayOfWeek: 1, isAvailable: true },
-    { id: '3', startTime: '10:00', endTime: '10:30', dayOfWeek: 1, isAvailable: true },
-    { id: '4', startTime: '10:30', endTime: '11:00', dayOfWeek: 1, isAvailable: true },
-    { id: '5', startTime: '11:00', endTime: '11:30', dayOfWeek: 1, isAvailable: true },
-    { id: '6', startTime: '14:00', endTime: '14:30', dayOfWeek: 1, isAvailable: true },
-    { id: '7', startTime: '14:30', endTime: '15:00', dayOfWeek: 1, isAvailable: true },
-    { id: '8', startTime: '15:00', endTime: '15:30', dayOfWeek: 1, isAvailable: true },
+    { id: '1', startTime: '09:00', endTime: '09:30', dayOfWeek: 1, isAvailable: true, isBreak: false },
+    { id: '2', startTime: '09:30', endTime: '10:00', dayOfWeek: 1, isAvailable: true, isBreak: false },
+    { id: '3', startTime: '10:00', endTime: '10:30', dayOfWeek: 1, isAvailable: true, isBreak: false },
+    { id: '4', startTime: '10:30', endTime: '11:00', dayOfWeek: 1, isAvailable: true, isBreak: false },
+    { id: '5', startTime: '11:00', endTime: '11:30', dayOfWeek: 1, isAvailable: true, isBreak: false },
+    { id: '6', startTime: '14:00', endTime: '14:30', dayOfWeek: 1, isAvailable: true, isBreak: false },
+    { id: '7', startTime: '14:30', endTime: '15:00', dayOfWeek: 1, isAvailable: true, isBreak: false },
+    { id: '8', startTime: '15:00', endTime: '15:30', dayOfWeek: 1, isAvailable: true, isBreak: false },
   ];
 
   return [

@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Your Appointment - Hospital</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #374151;
+            background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            font-size: 1.125rem;
+            color: #6b7280;
+        }
+
+        .booking-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .icon {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            margin-right: 0.5rem;
+            vertical-align: middle;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        input:hover, select:hover, textarea:hover {
+            border-color: #9ca3af;
+        }
+
+        .btn {
+            background: #3b82f6;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .info-box {
+            background: #dbeafe;
+            border: 1px solid #93c5fd;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .info-box h3 {
+            color: #1e40af;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .info-box ul {
+            list-style: none;
+            color: #1e40af;
+            font-size: 0.875rem;
+        }
+
+        .info-box li {
+            margin-bottom: 0.25rem;
+        }
+
+        .info-box li::before {
+            content: "•";
+            margin-right: 0.5rem;
+            font-weight: bold;
+        }
+
+        .success-card {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .success-icon {
+            width: 4rem;
+            height: 4rem;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .success-icon::after {
+            content: "✓";
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .success-card h2 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .success-card p {
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+
+        .appointment-details {
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .appointment-details h3 {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .detail-row strong {
+            color: #1f2937;
+        }
+
+        .detail-row span {
+            color: #6b7280;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid #f3f4f6;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .time-slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .time-slot {
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.875rem;
+        }
+
+        .time-slot:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .time-slot.selected {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .no-slots {
+            text-align: center;
+            color: #dc2626;
+            font-size: 0.875rem;
+            padding: 1rem;
+            background: #fef2f2;
+            border-radius: 0.375rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Book Your Appointment</h1>
+            <p>Schedule your visit with our medical professionals</p>
+        </div>
+
+        <!-- Booking Form -->
+        <div id="bookingForm" class="booking-card fade-in">
+            <form id="appointmentForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="patientName">
+                            <span class="icon">👤</span>
+                            Full Name *
+                        </label>
+                        <input type="text" id="patientName" name="patientName" required 
+                               placeholder="Enter your full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="patientPhone">
+                            <span class="icon">📞</span>
+                            Phone Number *
+                        </label>
+                        <input type="tel" id="patientPhone" name="patientPhone" required 
+                               placeholder="Enter your phone number">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="patientEmail">
+                        <span class="icon">✉️</span>
+                        Email Address (Optional)
+                    </label>
+                    <input type="email" id="patientEmail" name="patientEmail" 
+                           placeholder="Enter your email address">
+                </div>
+
+                <div class="form-group">
+                    <label for="doctorId">
+                        <span class="icon">👨‍⚕️</span>
+                        Select Doctor *
+                    </label>
+                    <select id="doctorId" name="doctorId" required>
+                        <option value="">Choose a doctor</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="appointmentDate">
+                            <span class="icon">📅</span>
+                            Preferred Date *
+                        </label>
+                        <input type="date" id="appointmentDate" name="appointmentDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="appointmentTime">
+                            <span class="icon">🕐</span>
+                            Preferred Time *
+                        </label>
+                        <div id="timeSlotsContainer">
+                            <div class="no-slots">Please select a doctor and date first</div>
+                        </div>
+                        <input type="hidden" id="appointmentTime" name="appointmentTime" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="reason">
+                        <span class="icon">📝</span>
+                        Reason for Visit *
+                    </label>
+                    <textarea id="reason" name="reason" rows="3" required 
+                              placeholder="Please describe the reason for your appointment"></textarea>
+                </div>
+
+                <div class="info-box">
+                    <h3>Important Notes:</h3>
+                    <ul>
+                        <li>Please arrive 15 minutes early for your appointment</li>
+                        <li>Bring a valid ID and insurance card</li>
+                        <li>You will receive a confirmation call within 24 hours</li>
+                        <li>For cancellations, please call at least 24 hours in advance</li>
+                    </ul>
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn">
+                    Book Appointment
+                </button>
+            </form>
+        </div>
+
+        <!-- Success Message -->
+        <div id="successMessage" class="booking-card hidden">
+            <div class="success-card">
+                <div class="success-icon"></div>
+                <h2>Booking Confirmed!</h2>
+                <p>Your appointment has been successfully booked. You will receive a confirmation call shortly.</p>
+                
+                <div class="appointment-details" id="appointmentDetails">
+                    <h3>Appointment Details:</h3>
+                    <!-- Details will be populated by JavaScript -->
+                </div>
+                
+                <button type="button" class="btn" onclick="resetForm()">
+                    Book Another Appointment
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data management
+        let doctors = [];
+        let appointments = [];
+        let selectedTimeSlot = null;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            setupEventListeners();
+            setMinDate();
+        });
+
+        // Load data from localStorage
+        function loadData() {
+            try {
+                const doctorsData = localStorage.getItem('hospital_doctors');
+                const appointmentsData = localStorage.getItem('hospital_appointments');
+                
+                doctors = doctorsData ? JSON.parse(doctorsData) : [];
+                appointments = appointmentsData ? JSON.parse(appointmentsData) : [];
+                
+                populateDoctors();
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError('Failed to load doctor information. Please refresh the page.');
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            document.getElementById('appointmentForm').addEventListener('submit', handleSubmit);
+            document.getElementById('doctorId').addEventListener('change', handleDoctorChange);
+            document.getElementById('appointmentDate').addEventListener('change', handleDateChange);
+            
+            // Listen for storage changes (real-time updates)
+            window.addEventListener('storage', function(e) {
+                if (e.key === 'hospital_doctors' || e.key === 'hospital_appointments') {
+                    loadData();
+                    updateTimeSlots();
+                }
+            });
+        }
+
+        // Set minimum date to today
+        function setMinDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('appointmentDate').min = today;
+        }
+
+        // Populate doctors dropdown
+        function populateDoctors() {
+            const doctorSelect = document.getElementById('doctorId');
+            doctorSelect.innerHTML = '<option value="">Choose a doctor</option>';
+            
+            const activeDoctors = doctors.filter(doctor => doctor.isActive);
+            
+            activeDoctors.forEach(doctor => {
+                const option = document.createElement('option');
+                option.value = doctor.id;
+                option.textContent = `${doctor.name} - ${doctor.specialization}`;
+                doctorSelect.appendChild(option);
+            });
+        }
+
+        // Handle doctor selection change
+        function handleDoctorChange() {
+            selectedTimeSlot = null;
+            document.getElementById('appointmentTime').value = '';
+            updateTimeSlots();
+        }
+
+        // Handle date change
+        function handleDateChange() {
+            selectedTimeSlot = null;
+            document.getElementById('appointmentTime').value = '';
+            updateTimeSlots();
+        }
+
+        // Update available time slots
+        function updateTimeSlots() {
+            const doctorId = document.getElementById('doctorId').value;
+            const selectedDate = document.getElementById('appointmentDate').value;
+            const container = document.getElementById('timeSlotsContainer');
+            
+            if (!doctorId || !selectedDate) {
+                container.innerHTML = '<div class="no-slots">Please select a doctor and date first</div>';
+                return;
+            }
+
+            const selectedDoctor = doctors.find(doc => doc.id === doctorId);
+            if (!selectedDoctor) {
+                container.innerHTML = '<div class="no-slots">Doctor not found</div>';
+                return;
+            }
+
+            const selectedDateObj = new Date(selectedDate);
+            const dayOfWeek = selectedDateObj.getDay();
+            
+            // Get doctor's available slots for the selected day
+            const doctorSlots = selectedDoctor.availableSlots.filter(
+                slot => slot.dayOfWeek === dayOfWeek && slot.isAvailable && !slot.isBreak
+            );
+
+            // Filter out already booked slots
+            const bookedSlots = appointments
+                .filter(apt => apt.doctorId === doctorId && apt.date === selectedDate && apt.bookingStatus !== 'cancelled')
+                .map(apt => apt.time);
+
+            const availableSlots = doctorSlots.filter(slot => !bookedSlots.includes(slot.startTime));
+
+            if (availableSlots.length === 0) {
+                container.innerHTML = '<div class="no-slots">No available slots for this date. Please choose another date.</div>';
+                return;
+            }
+
+            // Create time slots grid
+            const grid = document.createElement('div');
+            grid.className = 'time-slots-grid';
+            
+            availableSlots.forEach(slot => {
+                const timeSlot = document.createElement('div');
+                timeSlot.className = 'time-slot';
+                timeSlot.textContent = `${slot.startTime} - ${slot.endTime}`;
+                timeSlot.dataset.time = slot.startTime;
+                
+                timeSlot.addEventListener('click', function() {
+                    // Remove previous selection
+                    document.querySelectorAll('.time-slot').forEach(ts => ts.classList.remove('selected'));
+                    
+                    // Add selection to clicked slot
+                    this.classList.add('selected');
+                    selectedTimeSlot = slot.startTime;
+                    document.getElementById('appointmentTime').value = slot.startTime;
+                });
+                
+                grid.appendChild(timeSlot);
+            });
+            
+            container.innerHTML = '';
+            container.appendChild(grid);
+        }
+
+        // Handle form submission
+        function handleSubmit(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.textContent;
+            
+            // Show loading state
+            submitBtn.innerHTML = '<span class="loading"></span>Booking...';
+            submitBtn.disabled = true;
+            
+            // Validate time slot selection
+            if (!selectedTimeSlot) {
+                showError('Please select a time slot');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                return;
+            }
+            
+            // Get form data
+            const formData = new FormData(e.target);
+            const doctorId = formData.get('doctorId');
+            const selectedDoctor = doctors.find(doc => doc.id === doctorId);
+            
+            if (!selectedDoctor) {
+                showError('Selected doctor not found');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                return;
+            }
+            
+            // Create appointment object
+            const newAppointment = {
+                id: Date.now().toString(),
+                patientName: formData.get('patientName'),
+                patientPhone: formData.get('patientPhone'),
+                patientEmail: formData.get('patientEmail') || '',
+                doctorId: doctorId,
+                doctorName: selectedDoctor.name,
+                date: formData.get('appointmentDate'),
+                time: selectedTimeSlot,
+                reason: formData.get('reason'),
+                bookingStatus: 'upcoming',
+                followUpStatus: 'none',
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                bookedBy: 'customer'
+            };
+            
+            // Save appointment
+            try {
+                appointments.push(newAppointment);
+                localStorage.setItem('hospital_appointments', JSON.stringify(appointments));
+                updateLastModified();
+                
+                // Show success message
+                showSuccessMessage(newAppointment, selectedDoctor);
+                
+            } catch (error) {
+                console.error('Error saving appointment:', error);
+                showError('Failed to book appointment. Please try again.');
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Update last modified timestamp
+        function updateLastModified() {
+            localStorage.setItem('hospital_last_update', new Date().toISOString());
+        }
+
+        // Show success message
+        function showSuccessMessage(appointment, doctor) {
+            const bookingForm = document.getElementById('bookingForm');
+            const successMessage = document.getElementById('successMessage');
+            const appointmentDetails = document.getElementById('appointmentDetails');
+            
+            // Populate appointment details
+            appointmentDetails.innerHTML = `
+                <h3>Appointment Details:</h3>
+                <div class="detail-row">
+                    <strong>Patient:</strong>
+                    <span>${appointment.patientName}</span>
+                </div>
+                <div class="detail-row">
+                    <strong>Doctor:</strong>
+                    <span>${doctor.name}</span>
+                </div>
+                <div class="detail-row">
+                    <strong>Date:</strong>
+                    <span>${appointment.date}</span>
+                </div>
+                <div class="detail-row">
+                    <strong>Time:</strong>
+                    <span>${appointment.time}</span>
+                </div>
+                <div class="detail-row">
+                    <strong>Phone:</strong>
+                    <span>${appointment.patientPhone}</span>
+                </div>
+            `;
+            
+            // Hide form and show success message
+            bookingForm.classList.add('hidden');
+            successMessage.classList.remove('hidden');
+            successMessage.classList.add('fade-in');
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Reset form and show booking form again
+        function resetForm() {
+            const bookingForm = document.getElementById('bookingForm');
+            const successMessage = document.getElementById('successMessage');
+            const form = document.getElementById('appointmentForm');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Reset form
+            form.reset();
+            selectedTimeSlot = null;
+            
+            // Reset button
+            submitBtn.textContent = 'Book Appointment';
+            submitBtn.disabled = false;
+            
+            // Clear time slots
+            document.getElementById('timeSlotsContainer').innerHTML = 
+                '<div class="no-slots">Please select a doctor and date first</div>';
+            
+            // Show form and hide success message
+            successMessage.classList.add('hidden');
+            bookingForm.classList.remove('hidden');
+            
+            // Set minimum date again
+            setMinDate();
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Show error message
+        function showError(message) {
+            // Remove existing error messages
+            const existingErrors = document.querySelectorAll('.error-message');
+            existingErrors.forEach(error => error.remove());
+            
+            // Create new error message
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            
+            // Insert after the form
+            const form = document.getElementById('appointmentForm');
+            form.appendChild(errorDiv);
+            
+            // Remove error after 5 seconds
+            setTimeout(() => {
+                if (errorDiv.parentNode) {
+                    errorDiv.remove();
+                }
+            }, 5000);
+        }
+
+        // Utility function to format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+    </script>
+</body>
+</html>

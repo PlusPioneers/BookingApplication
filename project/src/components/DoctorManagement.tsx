@@ -85,20 +85,60 @@ const DoctorManagement: React.FC<DoctorManagementProps> = ({
     setTimeSlotsData([...doctor.availableSlots]);
   };
 
-  const addTimeSlot = () => {
-    const newSlot: TimeSlot = {
-      id: Date.now().toString(),
-      startTime: '09:00',
-      endTime: '09:30',
-      dayOfWeek: 1,
-      isAvailable: true
-    };
-    setTimeSlotsData([...timeSlotsData, newSlot]);
+  const generateTimeSlots = (dayOfWeek: number, startTime: string, endTime: string) => {
+    const slots: TimeSlot[] = [];
+    const start = new Date(`2000-01-01T${startTime}:00`);
+    const end = new Date(`2000-01-01T${endTime}:00`);
+    
+    let current = new Date(start);
+    let slotId = Date.now();
+    
+    while (current < end) {
+      const next = new Date(current.getTime() + 30 * 60000); // Add 30 minutes
+      if (next <= end) {
+        slots.push({
+          id: (slotId++).toString(),
+          startTime: current.toTimeString().slice(0, 5),
+          endTime: next.toTimeString().slice(0, 5),
+          dayOfWeek,
+          isAvailable: true,
+          isBreak: false
+        });
+      }
+      current = next;
+    }
+    
+    return slots;
   };
 
-  const updateTimeSlot = (slotId: string, updates: Partial<TimeSlot>) => {
+  const addTimeFrame = (dayOfWeek: number, startTime: string, endTime: string) => {
+    if (!startTime || !endTime) return;
+    
+    const newSlots = generateTimeSlots(dayOfWeek, startTime, endTime);
+    
+    // Remove existing slots for the same day and time range to avoid conflicts
+    const filteredSlots = timeSlotsData.filter(slot => {
+      if (slot.dayOfWeek !== dayOfWeek) return true;
+      
+      const slotStart = new Date(`2000-01-01T${slot.startTime}:00`);
+      const slotEnd = new Date(`2000-01-01T${slot.endTime}:00`);
+      const frameStart = new Date(`2000-01-01T${startTime}:00`);
+      const frameEnd = new Date(`2000-01-01T${endTime}:00`);
+      
+      // Keep slot if it doesn't overlap with the new frame
+      return slotEnd <= frameStart || slotStart >= frameEnd;
+    });
+    
+    setTimeSlotsData([...filteredSlots, ...newSlots]);
+  };
+
+  const toggleSlotType = (slotId: string) => {
     setTimeSlotsData(slots => 
-      slots.map(slot => slot.id === slotId ? { ...slot, ...updates } : slot)
+      slots.map(slot => 
+        slot.id === slotId 
+          ? { ...slot, isBreak: !slot.isBreak, isAvailable: slot.isBreak ? true : false }
+          : slot
+      )
     );
   };
 
@@ -217,91 +257,163 @@ const DoctorManagement: React.FC<DoctorManagementProps> = ({
 
       {editingTimeSlots && (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold mb-4">Edit Time Slots</h3>
+          <h3 className="text-lg font-semibold mb-6">Manage Doctor Schedule</h3>
           
-          <div className="space-y-4">
-            {timeSlotsData.map((slot) => (
-              <div key={slot.id} className="grid grid-cols-1 md:grid-cols-6 gap-4 items-center p-4 border border-gray-200 rounded-lg">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Day</label>
-                  <select
-                    value={slot.dayOfWeek}
-                    onChange={(e) => updateTimeSlot(slot.id, { dayOfWeek: parseInt(e.target.value) })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    {[0, 1, 2, 3, 4, 5, 6].map(day => (
-                      <option key={day} value={day}>{getDayName(day)}</option>
-                    ))}
-                  </select>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
-                  <input
-                    type="time"
-                    value={slot.startTime}
-                    onChange={(e) => updateTimeSlot(slot.id, { startTime: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
-                  <input
-                    type="time"
-                    value={slot.endTime}
-                    onChange={(e) => updateTimeSlot(slot.id, { endTime: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Available</label>
-                  <select
-                    value={slot.isAvailable ? 'true' : 'false'}
-                    onChange={(e) => updateTimeSlot(slot.id, { isAvailable: e.target.value === 'true' })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                  >
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
-                  </select>
-                </div>
-                
-                <div className="md:col-span-2">
-                  <button
-                    onClick={() => deleteTimeSlot(slot.id)}
-                    className="w-full px-3 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors"
-                  >
-                    Delete Slot
-                  </button>
-                </div>
+          {/* Add Time Frame Section */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <h4 className="text-md font-medium text-blue-900 mb-4">Add Working Hours</h4>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Day</label>
+                <select
+                  id="daySelect"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  defaultValue="1"
+                >
+                  {[0, 1, 2, 3, 4, 5, 6].map(day => (
+                    <option key={day} value={day}>{getDayName(day)}</option>
+                  ))}
+                </select>
               </div>
-            ))}
-            
-            <div className="flex justify-between items-center pt-4">
-              <button
-                onClick={addTimeSlot}
-                className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Time Slot
-              </button>
               
-              <div className="flex space-x-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Start Time</label>
+                <input
+                  type="time"
+                  id="startTimeInput"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  defaultValue="09:00"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">End Time</label>
+                <input
+                  type="time"
+                  id="endTimeInput"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  defaultValue="17:00"
+                />
+              </div>
+              
+              <div className="flex items-end">
                 <button
-                  onClick={cancelTimeSlotEdit}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  onClick={() => {
+                    const daySelect = document.getElementById('daySelect') as HTMLSelectElement;
+                    const startInput = document.getElementById('startTimeInput') as HTMLInputElement;
+                    const endInput = document.getElementById('endTimeInput') as HTMLInputElement;
+                    
+                    if (daySelect && startInput && endInput) {
+                      addTimeFrame(parseInt(daySelect.value), startInput.value, endInput.value);
+                    }
+                  }}
+                  className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                 >
-                  Cancel
-                </button>
-                <button
-                  onClick={saveTimeSlots}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Save Time Slots
+                  Generate Slots
                 </button>
               </div>
             </div>
+            <p className="text-sm text-blue-700 mt-2">
+              This will create 30-minute time slots for the selected time frame. Existing slots in this time range will be replaced.
+            </p>
+          </div>
+
+          {/* Current Schedule Display */}
+          <div className="space-y-4">
+            <h4 className="text-md font-medium text-gray-900">Current Schedule</h4>
+            
+            {[0, 1, 2, 3, 4, 5, 6].map(dayOfWeek => {
+              const daySlots = timeSlotsData
+                .filter(slot => slot.dayOfWeek === dayOfWeek)
+                .sort((a, b) => a.startTime.localeCompare(b.startTime));
+              
+              if (daySlots.length === 0) return null;
+              
+              return (
+                <div key={dayOfWeek} className="border border-gray-200 rounded-lg p-4">
+                  <h5 className="font-medium text-gray-900 mb-3">{getDayName(dayOfWeek)}</h5>
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
+                    {daySlots.map((slot) => (
+                      <div
+                        key={slot.id}
+                        className={`p-2 rounded-md text-center text-sm border-2 cursor-pointer transition-colors ${
+                          slot.isBreak
+                            ? 'bg-orange-100 border-orange-300 text-orange-800'
+                            : slot.isAvailable
+                            ? 'bg-green-100 border-green-300 text-green-800'
+                            : 'bg-gray-100 border-gray-300 text-gray-600'
+                        }`}
+                        onClick={() => toggleSlotType(slot.id)}
+                        title={`Click to toggle between ${slot.isBreak ? 'available slot' : 'break time'}`}
+                      >
+                        <div className="font-medium">
+                          {slot.startTime} - {slot.endTime}
+                        </div>
+                        <div className="text-xs mt-1">
+                          {slot.isBreak ? 'Break' : slot.isAvailable ? 'Available' : 'Unavailable'}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-2 flex justify-end">
+                    <button
+                      onClick={() => {
+                        const updatedSlots = timeSlotsData.filter(slot => slot.dayOfWeek !== dayOfWeek);
+                        setTimeSlotsData(updatedSlots);
+                      }}
+                      className="text-red-600 hover:text-red-800 text-sm px-2 py-1 rounded hover:bg-red-50"
+                    >
+                      Clear {getDayName(dayOfWeek)}
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+            
+            {timeSlotsData.length === 0 && (
+              <div className="text-center py-8 text-gray-500">
+                <Clock className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                <p>No time slots configured. Add working hours above to get started.</p>
+              </div>
+            )}
+          </div>
+
+          {/* Legend */}
+          <div className="bg-gray-50 rounded-lg p-4 mt-6">
+            <h5 className="font-medium text-gray-900 mb-2">Legend</h5>
+            <div className="flex flex-wrap gap-4 text-sm">
+              <div className="flex items-center">
+                <div className="w-4 h-4 bg-green-100 border-2 border-green-300 rounded mr-2"></div>
+                <span>Available for booking</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-4 h-4 bg-orange-100 border-2 border-orange-300 rounded mr-2"></div>
+                <span>Break time</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-4 h-4 bg-gray-100 border-2 border-gray-300 rounded mr-2"></div>
+                <span>Unavailable</span>
+              </div>
+            </div>
+            <p className="text-xs text-gray-600 mt-2">
+              Click on any time slot to toggle between available and break time.
+            </p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+            <button
+              onClick={cancelTimeSlotEdit}
+              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={saveTimeSlots}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Save Schedule
+            </button>
           </div>
         </div>
       )}

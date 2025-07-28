@@ -42,7 +42,7 @@ const CustomerBooking: React.FC<CustomerBookingProps> = ({
     
     // Get doctor's available slots for the selected day
     const doctorSlots = selectedDoctor.availableSlots.filter(
-      slot => slot.dayOfWeek === dayOfWeek && slot.isAvailable
+      slot => slot.dayOfWeek === dayOfWeek && slot.isAvailable && !slot.isBreak
     );
 
     // Filter out already booked slots

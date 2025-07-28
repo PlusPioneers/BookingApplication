@@ -15,6 +15,7 @@ export interface TimeSlot {
   endTime: string;
   dayOfWeek: number; // 0-6 (Sunday-Saturday)
   isAvailable: boolean;
+  isBreak?: boolean;
 }
 
 export interface Appointment {
